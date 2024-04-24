@@ -122,6 +122,7 @@ public class SecretCode {
      */
     public static Integer[] getMessageCode(String message)
     {
+        message = message.toUpperCase();
         int messageLength = message.length();
         Integer[] messageIntArray = new Integer[messageLength];
 
@@ -145,6 +146,7 @@ public class SecretCode {
      */
     public static String getMessageCodeString(String message)
     {
+        message = message.toUpperCase();
         StringBuilder encodeString = new StringBuilder("Message Code: ");
         Integer[] encodedMessage = SecretCode.getMessageCode(message);
         for (int k : encodedMessage) {
