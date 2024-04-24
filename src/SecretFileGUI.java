@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-public class FileSelection extends JFrame implements ActionListener {
+public class SecretFileGUI extends JFrame implements ActionListener {
 
     // Instance fields for buttons and text fields
     private final JButton encodeButton;
@@ -15,10 +15,11 @@ public class FileSelection extends JFrame implements ActionListener {
     private final JTextArea encodeResultMsgField = new JTextArea();
     private final JTextArea codeResultMessageField = new JTextArea();
 
-    public FileSelection(GUI_Type guiType)
+    public SecretFileGUI(GUI_Type guiType)
     {
         this.setLayout(new FlowLayout());
 
+        // Assign buttons and add action listeners
         encodeButton = new JButton("Encode a new message to a file");
         encodeButton.addActionListener(this);
 
@@ -36,7 +37,7 @@ public class FileSelection extends JFrame implements ActionListener {
         encodeResultMsgField.setEditable(false);
         codeResultMessageField.setEditable(false);
 
-        switch (guiType)
+        switch (guiType) // Add buttons/widgets to GUI based on selection
         {
             case MAIN ->
             {
@@ -66,11 +67,11 @@ public class FileSelection extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        FileSelection result; // Result GUI
+        SecretFileGUI result; // Result GUI
 
         if (e.getSource() == encodeButton) // Click encode button on main GUI
         {
-            new FileSelection(GUI_Type.TYPE_MESSAGE); // Open new GUI to allow user to type in a message and start selecting a file
+            new SecretFileGUI(GUI_Type.TYPE_MESSAGE); // Open new GUI to allow user to type in a message and start selecting a file
 
         } else if (e.getSource() == decodeButton) // Click decode button on main GUI
         {
@@ -83,7 +84,7 @@ public class FileSelection extends JFrame implements ActionListener {
             {
                 File chosenFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
 
-                result = new FileSelection(GUI_Type.ENCODE_RESULT); // Create a GUI that will show the decoded message
+                result = new SecretFileGUI(GUI_Type.ENCODE_RESULT); // Create a GUI that will show the decoded message
 
                 if (!isTxtFile(chosenFile)) // If the file is not a .txt file, end the method here
                 {
@@ -102,7 +103,7 @@ public class FileSelection extends JFrame implements ActionListener {
                 scrollPane.setPreferredSize(new Dimension(250, 50));
                 result.add(scrollPane);
 
-                codeResultMessageField.setText(SecretCode.getMessageCodeString(message));
+                codeResultMessageField.setText("Message Code: " + SecretCode.getMessageCodeString(message));
                 result.add(codeResultMessageField);
                 JScrollPane encodeScrollPane = new JScrollPane(codeResultMessageField);
                 encodeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -126,7 +127,7 @@ public class FileSelection extends JFrame implements ActionListener {
             {
                 File chosenFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
 
-                result = new FileSelection(GUI_Type.ENCODE_RESULT);
+                result = new SecretFileGUI(GUI_Type.ENCODE_RESULT);
 
                 if (!isTxtFile(chosenFile)) // If the file is not a .txt file, end the method here
                 { // Add widgets to result GUI to show incorrect file type

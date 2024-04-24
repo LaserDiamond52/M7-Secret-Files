@@ -1,8 +1,5 @@
-import javax.swing.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Scanner;
 
 public class Main {
 
@@ -12,6 +9,7 @@ public class Main {
     public static void main(String[] args) {
 
         // Create a file within the project to store a secret message
+        // This is just for quick access to test everything
         if (!SECRET_CODE_FILE.exists())
         {
             System.out.println("The file for storing/reading a secret message does not exist");
@@ -31,6 +29,6 @@ public class Main {
             }
         }
 
-        new FileSelection(FileSelection.GUI_Type.MAIN);
+        new SecretFileGUI(SecretFileGUI.GUI_Type.MAIN);
     }
 }

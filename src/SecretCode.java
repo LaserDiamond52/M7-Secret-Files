@@ -47,10 +47,8 @@ public class SecretCode {
                 {
                     letterMapValue = 27; // Set the char to a space in the encoder
                 }
-                //messageIntList.add(i, letterMapValue);
-                //messageIntArray[i] = letterMapValue;
 
-                messageWriter.write(letterMapValue + " ");
+                messageWriter.write(letterMapValue + " "); // Write code to file
             }
 
             messageWriter.close();
@@ -77,23 +75,26 @@ public class SecretCode {
         }
         try {
 
-            Scanner savedMessageScanner = new Scanner(file);
-            StringBuilder messageBuilder = new StringBuilder();
+            Scanner savedMessageScanner = new Scanner(file); // Gather data saved to file
+            StringBuilder messageBuilder = new StringBuilder(); // StringBuilder used to build the message stored in the file
             int i = 0;
-            while (savedMessageScanner.hasNext())
+            while (savedMessageScanner.hasNext()) // Use while loop to loop through and gather data in file
             {
                 String intLetterKeyStr = savedMessageScanner.next();
                 i++;
-                if (i == 1) // Skip over first saved int (as that is the length of the message)
+                if (i == 1) // Skip over first saved integer (as that is the length of the message)
                 {
                     continue;
                 }
-                try {
+                try { // Attempt to get integers stored in file from String and convert them to an int
                     int intLetterKey = Integer.parseInt(intLetterKeyStr);
                     Character letter = integerDecodeMap.get(intLetterKey);
-                    if (letter != null && integerDecodeMap.containsKey(intLetterKey))
+                    if (letter != null && integerDecodeMap.containsKey(intLetterKey)) // If there is a code stored for the letter the number is mapped to, append the letter to the messageBuilder
                     {
                         messageBuilder.append(letter);
+                    } else // Otherwise, append a space
+                    {
+                        messageBuilder.append(" ");
                     }
                 } catch (NumberFormatException e)
                 {
@@ -122,11 +123,11 @@ public class SecretCode {
      */
     public static Integer[] getMessageCode(String message)
     {
-        message = message.toUpperCase();
-        int messageLength = message.length();
-        Integer[] messageIntArray = new Integer[messageLength];
+        message = message.toUpperCase(); // Set message to all uppercase letters
+        int messageLength = message.length(); // Length of message
+        Integer[] messageIntArray = new Integer[messageLength]; // Array that is the size of the message
 
-        for (int i = 0; i < messageIntArray.length; i++)
+        for (int i = 0; i < messageIntArray.length; i++) // Assign values to each index of the array based on the characters in the message
         {
             Character letter = message.charAt(i);
             messageIntArray[i] = letterEncodeMap.get(letter);
@@ -140,19 +141,19 @@ public class SecretCode {
     }
 
     /**
-     * Gets the message code that the message is stored as as a String variable
+     * Gets the message code that the message is encoded as as a String variable
      * @param message The message to get the code of
      * @return The code of the message as a string
      */
     public static String getMessageCodeString(String message)
     {
-        message = message.toUpperCase();
-        StringBuilder encodeString = new StringBuilder("Message Code: ");
-        Integer[] encodedMessage = SecretCode.getMessageCode(message);
+        message = message.toUpperCase(); // Set message to all uppercase letters
+        StringBuilder encodeString = new StringBuilder(); // StringBuilder is used to create String of message code
+        Integer[] encodedMessage = SecretCode.getMessageCode(message); // Get message code
         for (int k : encodedMessage) {
-            encodeString.append(k).append(" ");
+            encodeString.append(k).append(" "); // Append each code value to the string, followed by a space
         }
-        return encodeString.toString();
+        return encodeString.toString(); // Return the final string
     }
 
     /**
