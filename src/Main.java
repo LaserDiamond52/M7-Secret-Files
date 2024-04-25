@@ -22,7 +22,7 @@ public class Main {
                 {
                     System.out.println("File for secret messages already exists");
                 }
-            } catch (IOException e)
+            } catch (IOException e) //
             {
                 System.out.println("There was an error accessing the file! :(");
                 e.printStackTrace();
