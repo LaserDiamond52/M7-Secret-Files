@@ -76,7 +76,7 @@ public class SecretFileGUI extends JFrame implements ActionListener {
         } else if (e.getSource() == decodeButton) // Click decode button on main GUI
         {
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File("."));
+            fileChooser.setCurrentDirectory(new File(".")); // Default directory when choosing a file
 
             int response = fileChooser.showOpenDialog(null); // Select file to open
 
@@ -93,7 +93,8 @@ public class SecretFileGUI extends JFrame implements ActionListener {
                     return;
                 }
 
-                String message = SecretCode.decode(chosenFile); // Message stored in file
+                Integer[] messageCode = SecretCode.encode(SecretCodeWriter.decodeFromFile(chosenFile)); // Get the encoding of the message from the file
+                String message = SecretCode.decode(messageCode); // Decode the message into a String
 
                 // Add widgets to GUI to display the decoded message + the code of the message
                 encodeResultMsgField.setText("Encoded message: " + message);
@@ -102,13 +103,6 @@ public class SecretFileGUI extends JFrame implements ActionListener {
                 scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 scrollPane.setPreferredSize(new Dimension(250, 50));
                 result.add(scrollPane);
-
-                codeResultMessageField.setText("Message Code: " + SecretCode.getMessageCodeString(message));
-                result.add(codeResultMessageField);
-                JScrollPane encodeScrollPane = new JScrollPane(codeResultMessageField);
-                encodeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                encodeScrollPane.setPreferredSize(new Dimension(250, 50));
-                result.add(encodeScrollPane);
 
             }
         } else if (e.getSource() == exitButton) // Click to terminate program at any time
@@ -119,11 +113,11 @@ public class SecretFileGUI extends JFrame implements ActionListener {
             String messageInput = messageField.getText();
 
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File("."));
+            fileChooser.setCurrentDirectory(new File(".")); // Default directory when choosing a file
 
             int response = fileChooser.showOpenDialog(null);
 
-            if (response == JFileChooser.APPROVE_OPTION) // User has chosen a file to save the message to
+            if (response == JFileChooser.APPROVE_OPTION) // User has chosen a file to write the encoded the message to
             {
                 File chosenFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
 
@@ -136,7 +130,8 @@ public class SecretFileGUI extends JFrame implements ActionListener {
                     return;
                 }
 
-                SecretCode.encode(chosenFile, messageInput); // Encode the message to store in the chosen file
+                Integer[] messageCode = SecretCode.encode(messageInput); // Encode the message into an integer array
+                SecretCodeWriter.encodeToFile(chosenFile, messageCode); // Write the encoded message to the chosen file
 
                 // Add widgets to result GUI to show user message was encoded
                 encodeResultMsgField.setText("Encoded message \"" + messageInput + "\" to file " + chosenFile.getName());

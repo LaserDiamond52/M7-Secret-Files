@@ -1,232 +1,57 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
 
 public class SecretCode {
 
-    private static final String FILE_DOES_NOT_EXIST_MSG = "File does not exist :(";
-
     /**
-     * Encodes a new message and saves it to the SecretMessage.txt file. Anything saved to the file will be wiped and replaced with the encoded message
-     * <p>Unsupported characters will be saved as a space
-     * <p>Supported Characters:
-     * <li>
-     * Letters A-Z (Saved as uppercase. lowercase letters will automatically be saved as uppercase)
-     * </li>
-     * <li>
-     * Space
-     * </li>
-     * <li>
-     * Period
-     * </li>
-     * @param file The file to encode the message into
-     * @param message The message to save to the SecretMessage.txt file
+     * Encodes a message into an integer array
+     * <p>Unsupported characters will be saved as a space (lowercase letters will be converted to uppercase)
+     * <p>Supported characters:
+     * <li>Letters A-Z</li>
+     * <li>Space</li>
+     * <li>Period</li>
+     * @param message The message to encode
+     * @return The encoded message as an integer array
      */
-    public static void encode(File file, String message)
+    public static Integer[] encode(String message)
     {
-        message = message.toUpperCase(); // Set all letters in message to upper-case
-        int messageLength = message.length();
+        message = message.toUpperCase(); // Set all letters in the message to uppercase
+        int messageLength = message.length(); // Length of the message
+        Integer[] messageCode = new Integer[messageLength]; // Create a new Integer Array to store the encoded message
 
-        if (!file.exists()) // Check if file exists
+        for (int i = 0; i < messageLength; i++) // Loop through each character in the message and add them to the messageCode array
         {
-            System.out.println(FILE_DOES_NOT_EXIST_MSG);
-            return;
-        }
-        try {
-            FileWriter messageWriter = new FileWriter(file, false);
-            messageWriter.flush();
-
-            messageWriter.write(messageLength + "\n"); // Write message length to the first line of the file, then start a new line
-
-            for (int i = 0; i < messageLength; i++)
+            char c = message.charAt(i);
+            Integer charCode = SecretCodeWriter.letterEncodeMap.get(c);
+            if (charCode == null || !SecretCodeWriter.letterEncodeMap.containsKey(c)) // Check if character is supported
             {
-                char letter = message.charAt(i);
-                Integer letterMapValue = letterEncodeMap.get(letter);
-                if (letterMapValue == null || !letterEncodeMap.containsKey(letter)) // If there is no char stored for the char in the string
-                {
-                    letterMapValue = 27; // Set the char to a space in the encoder
-                }
-
-                messageWriter.write(letterMapValue + " "); // Write code to file
+                charCode = 27; // Unsupported character is saved as a space
             }
 
-            messageWriter.close();
-        } catch (IOException e)
-        {
-            System.out.println("ERROR WHILE WRITING MESSAGE TO FILE");
-            System.out.println(" ");
-            e.printStackTrace();
+            messageCode[i] = charCode; // Assign index "i" of the message code array to the char code
         }
+
+        return messageCode;
     }
 
     /**
-     * Decodes and returns the message stored in the file
-     * @param file The file to get the message from
-     * @return The message stored in the file
+     * Decodes the message from the Integer Array to a String
+     * @param messageCode The integer array encoding of the message to decode
+     * @return The message stored in the file as a string in all uppercase
      */
-    public static String decode(File file)
+    public static String decode(Integer[] messageCode)
     {
-        String message = "";
-        if (!file.exists()) // Check if file exists
-        {
-            System.out.println(FILE_DOES_NOT_EXIST_MSG);
-            return message;
-        }
-        try {
+        StringBuilder messageBuilder = new StringBuilder(); // StringBuilder used to store/append to the message
 
-            Scanner savedMessageScanner = new Scanner(file); // Gather data saved to file
-            StringBuilder messageBuilder = new StringBuilder(); // StringBuilder used to build the message stored in the file
-            int i = 0;
-            while (savedMessageScanner.hasNext()) // Use while loop to loop through and gather data in file
+        for (Integer charCode : messageCode) // Loop through the messageCode and append the character to messageBuilder
+        {
+            Character c = SecretCodeWriter.integerDecodeMap.get(charCode);
+            if (c == null || !SecretCodeWriter.integerDecodeMap.containsKey(charCode)) // Check if char in file is supported
             {
-                String intLetterKeyStr = savedMessageScanner.next();
-                i++;
-                if (i == 1) // Skip over first saved integer (as that is the length of the message)
-                {
-                    continue;
-                }
-                try { // Attempt to get integers stored in file from String and convert them to an int
-                    int intLetterKey = Integer.parseInt(intLetterKeyStr);
-                    Character letter = integerDecodeMap.get(intLetterKey);
-                    if (letter != null && integerDecodeMap.containsKey(intLetterKey)) // If there is a code stored for the letter the number is mapped to, append the letter to the messageBuilder
-                    {
-                        messageBuilder.append(letter);
-                    } else // Otherwise, append a space
-                    {
-                        messageBuilder.append(" ");
-                    }
-                } catch (NumberFormatException e)
-                {
-                    System.out.println("ERROR READING CODE FROM FILE");
-                    e.printStackTrace();
-                }
-
+                c = ' '; // char is not supported, it will be saved as a space
             }
-
-            savedMessageScanner.close();
-            message = messageBuilder.toString();
-
-        } catch (IOException e)
-        {
-            System.out.println("ERROR TRYING TO READ FROM FILE");
-            e.printStackTrace();
+            messageBuilder.append(c); // Append char to message
         }
 
-        return message;
+        return messageBuilder.toString();
     }
 
-    /**
-     * Gets the code that the message is stored as.
-     * @param message The message encoded in the file (as a String)
-     * @return an int array of the message code
-     */
-    public static Integer[] getMessageCode(String message)
-    {
-        message = message.toUpperCase(); // Set message to all uppercase letters
-        int messageLength = message.length(); // Length of message
-        Integer[] messageIntArray = new Integer[messageLength]; // Array that is the size of the message
-
-        for (int i = 0; i < messageIntArray.length; i++) // Assign values to each index of the array based on the characters in the message
-        {
-            Character letter = message.charAt(i);
-            messageIntArray[i] = letterEncodeMap.get(letter);
-            if (messageIntArray[i] == null || !letterEncodeMap.containsKey(letter))
-            {
-                messageIntArray[i] = 27;
-            }
-        }
-
-        return messageIntArray;
-    }
-
-    /**
-     * Gets the message code that the message is encoded as as a String variable
-     * @param message The message to get the code of
-     * @return The code of the message as a string
-     */
-    public static String getMessageCodeString(String message)
-    {
-        message = message.toUpperCase(); // Set message to all uppercase letters
-        StringBuilder encodeString = new StringBuilder(); // StringBuilder is used to create String of message code
-        Integer[] encodedMessage = SecretCode.getMessageCode(message); // Get message code
-        for (int k : encodedMessage) {
-            encodeString.append(k).append(" "); // Append each code value to the string, followed by a space
-        }
-        return encodeString.toString(); // Return the final string
-    }
-
-    /**
-     * HashMap that contains Character-Integer mappings for secret messages
-     * <p>Contains all uppercase letters (no lowercase), space, and period
-     */
-    private static final HashMap<Character, Integer> letterEncodeMap = new HashMap<>();
-    static
-    {
-        letterEncodeMap.put('A', 1);
-        letterEncodeMap.put('B', 2);
-        letterEncodeMap.put('C', 3);
-        letterEncodeMap.put('D', 4);
-        letterEncodeMap.put('E', 5);
-        letterEncodeMap.put('F', 6);
-        letterEncodeMap.put('G', 7);
-        letterEncodeMap.put('H', 8);
-        letterEncodeMap.put('I', 9);
-        letterEncodeMap.put('J', 10);
-        letterEncodeMap.put('K', 11);
-        letterEncodeMap.put('L', 12);
-        letterEncodeMap.put('M', 13);
-        letterEncodeMap.put('N', 14);
-        letterEncodeMap.put('O', 15);
-        letterEncodeMap.put('P', 16);
-        letterEncodeMap.put('Q', 17);
-        letterEncodeMap.put('R', 18);
-        letterEncodeMap.put('S', 19);
-        letterEncodeMap.put('T', 20);
-        letterEncodeMap.put('U', 21);
-        letterEncodeMap.put('V', 22);
-        letterEncodeMap.put('W', 23);
-        letterEncodeMap.put('X', 24);
-        letterEncodeMap.put('Y', 25);
-        letterEncodeMap.put('Z', 26);
-        letterEncodeMap.put(' ', 27);
-        letterEncodeMap.put('.', 28);
-    }
-
-    /**
-     * HashMap that contains Integer-Character mappings for secret messages
-     * <p>Contains all uppercase letters (no lowercase), space, and period
-     */
-    private static final HashMap<Integer, Character> integerDecodeMap = new HashMap<>();
-    static
-    {
-        integerDecodeMap.put(1, 'A');
-        integerDecodeMap.put(2, 'B');
-        integerDecodeMap.put(3, 'C');
-        integerDecodeMap.put(4, 'D');
-        integerDecodeMap.put(5, 'E');
-        integerDecodeMap.put(6, 'F');
-        integerDecodeMap.put(7, 'G');
-        integerDecodeMap.put(8, 'H');
-        integerDecodeMap.put(9, 'I');
-        integerDecodeMap.put(10, 'J');
-        integerDecodeMap.put(11, 'K');
-        integerDecodeMap.put(12, 'L');
-        integerDecodeMap.put(13, 'M');
-        integerDecodeMap.put(14, 'N');
-        integerDecodeMap.put(15, 'O');
-        integerDecodeMap.put(16, 'P');
-        integerDecodeMap.put(17, 'Q');
-        integerDecodeMap.put(18, 'R');
-        integerDecodeMap.put(19, 'S');
-        integerDecodeMap.put(20, 'T');
-        integerDecodeMap.put(21, 'U');
-        integerDecodeMap.put(22, 'V');
-        integerDecodeMap.put(23, 'W');
-        integerDecodeMap.put(24, 'X');
-        integerDecodeMap.put(25, 'Y');
-        integerDecodeMap.put(26, 'Z');
-        integerDecodeMap.put(27, ' ');
-        integerDecodeMap.put(28, '.');
-    }
 }
