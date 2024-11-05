@@ -43,8 +43,8 @@ public class SecretCode {
 
         for (Integer charCode : messageCode) // Loop through the messageCode and append the character to messageBuilder
         {
-            Character c = SecretCodeWriter.integerDecodeMap.get(charCode);
-            if (c == null || !SecretCodeWriter.integerDecodeMap.containsKey(charCode)) // Check if char in file is supported
+            Character c = SecretCodeWriter.getKeyByValue(charCode);
+            if (c == null) // Check if char in file is supported
             {
                 c = ' '; // char is not supported, it will be saved as a space
             }
@@ -53,5 +53,7 @@ public class SecretCode {
 
         return messageBuilder.toString();
     }
+
+
 
 }

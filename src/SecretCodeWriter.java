@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class SecretCodeWriter {
@@ -68,8 +70,8 @@ public class SecretCodeWriter {
                 }
                 try { // Attempt to get integers stored in file from String and convert them to an int
                     int intCharKey = Integer.parseInt(intLetterKeyStr);
-                    Character c = integerDecodeMap.get(intCharKey);
-                    if (c != null && integerDecodeMap.containsKey(intCharKey)) // If there is a code stored for the letter the number is mapped to, append the letter to the messageBuilder
+                    Character c = getKeyByValue(intCharKey);
+                    if (c != null) // If there is a code stored for the letter the number is mapped to, append the letter to the messageBuilder
                     {
                         messageBuilder.append(c);
                     } else // Otherwise, append a space
@@ -134,39 +136,68 @@ public class SecretCodeWriter {
     }
 
     /**
-     * HashMap that contains Integer-Character mappings for secret messages
-     * <p>Contains all uppercase letters (no lowercase), space, and period
+     * Gets the character mapped to the integer value in the letterEncodeMap when passed through
+     * @param value The integer value to pass in
+     * @return The character value mapped to it. Returns null if no character is mapped to the value entered.
      */
-    public static final HashMap<Integer, Character> integerDecodeMap = new HashMap<>();
-    static
+    public static Character getKeyByValue(Integer value)
     {
-        integerDecodeMap.put(1, 'A');
-        integerDecodeMap.put(2, 'B');
-        integerDecodeMap.put(3, 'C');
-        integerDecodeMap.put(4, 'D');
-        integerDecodeMap.put(5, 'E');
-        integerDecodeMap.put(6, 'F');
-        integerDecodeMap.put(7, 'G');
-        integerDecodeMap.put(8, 'H');
-        integerDecodeMap.put(9, 'I');
-        integerDecodeMap.put(10, 'J');
-        integerDecodeMap.put(11, 'K');
-        integerDecodeMap.put(12, 'L');
-        integerDecodeMap.put(13, 'M');
-        integerDecodeMap.put(14, 'N');
-        integerDecodeMap.put(15, 'O');
-        integerDecodeMap.put(16, 'P');
-        integerDecodeMap.put(17, 'Q');
-        integerDecodeMap.put(18, 'R');
-        integerDecodeMap.put(19, 'S');
-        integerDecodeMap.put(20, 'T');
-        integerDecodeMap.put(21, 'U');
-        integerDecodeMap.put(22, 'V');
-        integerDecodeMap.put(23, 'W');
-        integerDecodeMap.put(24, 'X');
-        integerDecodeMap.put(25, 'Y');
-        integerDecodeMap.put(26, 'Z');
-        integerDecodeMap.put(27, ' ');
-        integerDecodeMap.put(28, '.');
+        for (Map.Entry<Character, Integer> entry : letterEncodeMap.entrySet())
+        {
+            if (Objects.equals(value, entry.getValue()))
+            {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
+
+    public static <T, E> T getKeyByValue(Map<T, E> map, E value)
+    {
+        for (Map.Entry<T, E> entry : map.entrySet())
+        {
+            if (Objects.equals(value, entry.getValue()))
+            {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+//    /**
+//     * HashMap that contains Integer-Character mappings for secret messages
+//     * <p>Contains all uppercase letters (no lowercase), space, and period
+//     */
+//    public static final HashMap<Integer, Character> integerDecodeMap = new HashMap<>();
+//    static
+//    {
+//        integerDecodeMap.put(1, 'A');
+//        integerDecodeMap.put(2, 'B');
+//        integerDecodeMap.put(3, 'C');
+//        integerDecodeMap.put(4, 'D');
+//        integerDecodeMap.put(5, 'E');
+//        integerDecodeMap.put(6, 'F');
+//        integerDecodeMap.put(7, 'G');
+//        integerDecodeMap.put(8, 'H');
+//        integerDecodeMap.put(9, 'I');
+//        integerDecodeMap.put(10, 'J');
+//        integerDecodeMap.put(11, 'K');
+//        integerDecodeMap.put(12, 'L');
+//        integerDecodeMap.put(13, 'M');
+//        integerDecodeMap.put(14, 'N');
+//        integerDecodeMap.put(15, 'O');
+//        integerDecodeMap.put(16, 'P');
+//        integerDecodeMap.put(17, 'Q');
+//        integerDecodeMap.put(18, 'R');
+//        integerDecodeMap.put(19, 'S');
+//        integerDecodeMap.put(20, 'T');
+//        integerDecodeMap.put(21, 'U');
+//        integerDecodeMap.put(22, 'V');
+//        integerDecodeMap.put(23, 'W');
+//        integerDecodeMap.put(24, 'X');
+//        integerDecodeMap.put(25, 'Y');
+//        integerDecodeMap.put(26, 'Z');
+//        integerDecodeMap.put(27, ' ');
+//        integerDecodeMap.put(28, '.');
+//    }
 }
